@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,47 +13,100 @@
 
     <title>Image Collections</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
     <header>
+
         <h1>Image Collections</h1>
 
         <p>
-            Discover, save, and organize your favorite images.
+            Discover, save, and organize images you love.
         </p>
+
     </header>
 
 
     <main>
 
         <section>
-            <h2>Create Collection</h2>
 
-            <input
-                id="collection-name"
-                type="text"
-                placeholder="Collection name"
-            >
+            <h2>Discover Images</h2>
 
-            <button id="create-collection">
-                Create
-            </button>
+            <div class="controls">
+
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="Search for images..."
+                >
+
+                <button id="search-button">
+                    Search
+                </button>
+
+            </div>
+
+            <div
+                id="search-results"
+                class="image-grid"
+            ></div>
+
         </section>
 
+        <section>
+
+            <h2>Create a Collection</h2>
+
+            <div class="controls">
+
+                <input
+                    id="collection-name"
+                    type="text"
+                    placeholder="Collection name"
+                >
+
+                <button id="create-collection">
+                    Create
+                </button>
+
+            </div>
+
+        </section>
 
         <section>
+
             <h2>My Collections</h2>
 
             <div id="collections"></div>
+
         </section>
 
+        <section id="collection-details">
+
+            <h2 id="selected-collection-name">
+                Select a collection
+            </h2>
+
+            <div
+                id="saved-images"
+                class="image-grid"
+            ></div>
+
+        </section>
+
+
     </main>
-
-
+    
     <script src="script.js"></script>
+
 
 </body>
 

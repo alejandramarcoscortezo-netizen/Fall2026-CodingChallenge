@@ -1,5 +1,6 @@
 const API_URL = "http://127.0.0.1:5000";
 
+let selectedCollectionId = null;
 
 async function loadCollections() {
     const response = await fetch(
@@ -19,8 +20,24 @@ async function loadCollections() {
 
         element.className = "collection";
 
-        element.textContent = collection.name;
+        const name = document.createElement("span");
+        name.className = "collection-name";
+        name.textContent = collection.name;
 
+        name.addEventListener(
+            "click",
+            () => openCollection(collection.id)
+        );
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener(
+            "click",
+            () => deleteCollection(collection.id)
+        );
+
+        element.appendChild(name);
+        element.appendChild(deleteButton);
         container.appendChild(element);
     }
 }
@@ -33,10 +50,11 @@ async function createCollection() {
     const name = input.value.trim();
 
     if (!name) {
+        alert("Please enter a collection name.");
         return;
     }
 
-    await fetch(
+    const response =await fetch(
         `${API_URL}/collections`,
         {
             method: "POST",
@@ -50,6 +68,11 @@ async function createCollection() {
             })
         }
     );
+
+    if (!response.ok){
+        alert("Could not create collection.");
+        return;
+    }
 
     input.value = "";
 
