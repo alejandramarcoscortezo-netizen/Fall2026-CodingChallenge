@@ -59,3 +59,151 @@ def create_collections():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+@app.route(
+    "/collections/<int:collection_id>",
+    methods=["DELETE"]
+)
+def delete_collection(collection_id):
+    connection = get_connection()
+
+    connection.execute(
+        "DELETE FROM images WHERE collection_id = ?",
+        (collection_id,)
+    )
+
+    connection.execute(
+        "DELETE FROM collections WHERE id = ?",
+        (collection_id,)
+    )
+
+    connection.commit()
+
+    connection.close()
+
+    return jsonify({
+        "message": "Collection deleted"
+    })
+
+@app.route(
+    "/collections/<int:collection_id>/images",
+    methods=["POST"]
+)
+def save_image(collection_id):
+    data = request.get_json()
+
+    image_url = data.get("image_url")
+    title = data.get("title", "")
+
+    if not image_url:
+        return jsonify({
+            "error": "Image URL is required"
+        }), 400
+
+    connection = get_connection()
+
+    cursor = connection.execute(
+        """
+        INSERT INTO images
+        (collection_id, title, image_url)
+        VALUES (?, ?, ?)
+        """,
+        (
+            collection_id,
+            title,
+            image_url
+        )
+    )
+
+    connection.commit()
+
+    image_id = cursor.lastrowid
+
+    connection.close()
+
+    return jsonify({
+        "id": image_id,
+        "collection_id": collection_id,
+        "title": title,
+        "image_url": image_url
+    }), 201
+
+@app.route(
+    "/collections/<int:collection_id>/images/<int:image_id>",
+    methods=["PUT"]
+)
+def edit_image(collection_id, image_id):
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "No information was provided"
+        }), 400
+
+    new_title = data.get("title")
+
+    if new_title is None:
+        return jsonify({
+            "error": "Title is required"
+        }), 400
+
+    connection = get_connection()
+
+    cursor = connection.execute(
+        """
+        UPDATE images
+        SET title = ?
+        WHERE id = ? AND collection_id = ?
+        """,
+        (
+            new_title,
+            image_id,
+            collection_id
+        )
+    )
+
+    connection.commit()
+
+    if cursor.rowcount == 0:
+
+        connection.close()
+
+        return jsonify({
+            "error": "Image not found"
+        }), 404
+
+    connection.close()
+
+    return jsonify({
+        "message": "Image updated successfully",
+        "id": image_id,
+        "collection_id": collection_id,
+        "title": new_title
+    }), 200
+
+@app.route(
+    "/collections/<int:collection_id>/images/<int:image_id>",
+    methods=["DELETE"]
+)
+def delete_image(collection_id, image_id):
+    connection = get_connection()
+
+    connection.execute(
+        """
+        DELETE FROM images
+        WHERE id = ? AND collection_id = ?
+        """,
+        (
+            image_id,
+            collection_id
+        )
+    )
+
+    connection.commit()
+
+    connection.close()
+
+    return jsonify({
+        "message": "Image deleted"
+    })
