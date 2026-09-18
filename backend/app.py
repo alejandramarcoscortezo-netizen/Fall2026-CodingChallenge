@@ -67,28 +67,34 @@ if __name__ == "__main__":
 def delete_collection(collection_id):
     connection = get_connection()
 
-    connection.execute(
+    cursor =connection.execute(
         "DELETE FROM images WHERE collection_id = ?",
         (collection_id,)
     )
 
-    connection.execute(
+    cursor =connection.execute(
         "DELETE FROM collections WHERE id = ?",
         (collection_id,)
     )
 
     connection.commit()
+    if cursor.rowcount == 0:
+        connection.close()
+
+        return jsonify({
+            "error": "Collection not found"
+        }), 404
 
     connection.close()
 
     return jsonify({
-        "message": "Collection deleted"
+        "message": "Collection deleted successfully"
     })
 
 @app.route(
     "/collections/<int:collection_id>/images",
-    methods=["POST"]
-)
+    methods=["POST"])
+
 def save_image(collection_id):
     data = request.get_json()
 

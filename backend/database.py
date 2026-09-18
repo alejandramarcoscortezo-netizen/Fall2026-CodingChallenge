@@ -9,6 +9,8 @@ def get_connection():
 
     connection.row_factory = sqlite3.Row
 
+    connection.execute("PRAGMA foreign_keys = ON")
+
     return connection
 
 
@@ -30,6 +32,7 @@ def initialize_database():
             image_url TEXT NOT NULL,
             FOREIGN KEY (collection_id)
                 REFERENCES collections(id)
+                ON DELETE CASCADE
         )
     """)
 
